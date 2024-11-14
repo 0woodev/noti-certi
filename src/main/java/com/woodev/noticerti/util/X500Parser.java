@@ -27,6 +27,13 @@ import java.util.stream.Collectors;
  * @see <a href="https://en.wikipedia.org/wiki/Distinguished_Name">Distinguished Name</a>
  */
 public class X500Parser {
+    public static final String CN = "CN";
+    public static final String OU = "OU";
+    public static final String O = "O";
+    public static final String L = "L";
+    public static final String S = "S";
+    public static final String C = "C";
+
 
     /**
      * X500 구조의 문자열에서 특정 필드의 값을 반환한다. (없는 경우 null 반환)
