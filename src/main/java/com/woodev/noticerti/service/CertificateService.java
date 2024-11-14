@@ -3,7 +3,9 @@ package com.woodev.noticerti.service;
 
 import com.woodev.noticerti.dto.CertificateInfoDTO;
 
+import java.net.URL;
+
 
 public interface CertificateService {
-    CertificateInfoDTO getCertificateFromServer(String url) throws Exception;
+    CertificateInfoDTO getCertificateFromServer(URL url) throws Exception;
 }

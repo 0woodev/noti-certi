@@ -2,8 +2,10 @@ package com.woodev.noticerti.service.impl;
 
 import com.woodev.noticerti.dto.CertificateInfoDTO;
 import com.woodev.noticerti.service.CertificateService;
+import com.woodev.noticerti.util.URLBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,15 +41,13 @@ class CertificateServiceImplTest {
         List<CertificateInfoDTO> certs = new ArrayList<>();
 
         for (Map<String, Object> m : map) {
-            String url = m.get("domain") + ":" + m.get("port");
             try {
-                CertificateInfoDTO cert = certificateService.getCertificateFromServer(url);
+                URL httpsUrl = URLBuilder.getHttps(m.get("domain").toString(), (int) m.get("port"));
+                CertificateInfoDTO cert = certificateService.getCertificateFromServer(httpsUrl);
                 certs.add(cert);
             } catch (Exception e) {
-                System.out.println(url + " 인증서 정보 가져오기 실패");
                 e.printStackTrace();
                 certs.add(null);
-
             }
         }
         // then
