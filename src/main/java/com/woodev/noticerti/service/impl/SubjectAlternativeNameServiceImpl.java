@@ -15,6 +15,6 @@ public class SubjectAlternativeNameServiceImpl implements SubjectAlternativeName
     private final SubjectAlternativeNameRepository sanRepository;
     @Override
     public List<SubjectAlternativeName> findAllByCertificate(Long certificateId) {
-        return null;
+        return sanRepository.findAllByCertificateId(certificateId);
     }
 }
