@@ -1,10 +1,13 @@
 package com.woodev.noticerti.dto;
 
+import com.woodev.noticerti.model.Certificate;
+import com.woodev.noticerti.model.SubjectAlternativeName;
 import lombok.*;
 
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.woodev.noticerti.util.X500Parser.CN;
@@ -55,6 +58,16 @@ public class CertificateInfoDTO {
         } catch (CertificateParsingException e) {
             this.sans = null;
         }
+    }
+
+    public CertificateInfoDTO(Certificate certificate, List<SubjectAlternativeName> sans) {
+        this.commonName = certificate.getCommonName();
+        this.issuingCA = certificate.getIssuingCA();
+        this.organization = certificate.getOrganization();
+        this.validFrom = certificate.getValidFrom();
+        this.validTo = certificate.getValidTo();
+        this.serialNumber = certificate.getSerialNumber();
+        this.sans = sans == null ? new ArrayList<>() : sans.stream().map(SubjectAlternativeName::getDomain).toList();
     }
 
     public String getSimpleSAN() {
