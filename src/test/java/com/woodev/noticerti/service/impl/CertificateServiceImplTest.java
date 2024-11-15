@@ -71,8 +71,15 @@ class CertificateServiceImplTest {
         }
     }
 
+    @Test
+    void getCertificateFromDB() {
+        // given
 
+        // when
 
+        // then
+
+    }
 
 
 }
