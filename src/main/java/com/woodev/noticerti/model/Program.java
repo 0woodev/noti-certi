@@ -14,6 +14,19 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(
+        name = "PROGRAM",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "PK_PROGRAM",
+                        columnNames = {"ID"}
+                ),
+                @UniqueConstraint(
+                        name = "UK_PROGRAM__CODE",
+                        columnNames = {"CODE"}
+                )
+        }
+)
 public class Program extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

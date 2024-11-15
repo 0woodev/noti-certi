@@ -21,8 +21,8 @@ import java.util.List;
                 columnNames = {"id"}
         ),
         @UniqueConstraint(
-                name = "UK_CERTIFICATE",
-                columnNames = {"issuingCA", "serialNumber"}
+                name = "UK_CERTIFICATE__ISSUINGCA_SERIAL_NUMBER",
+                columnNames = {"issuingCA", "serial_number"}
         )
 })
 public class Certificate extends BaseEntity {

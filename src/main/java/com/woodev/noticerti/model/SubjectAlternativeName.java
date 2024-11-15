@@ -12,11 +12,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints =
-    @UniqueConstraint(
-            name = "UK_SUBJECT_ALTERNATIVE_NAME",
-            columnNames = {"certificate_id", "domain"}
-    )
+@Table(
+        name = "SUBJECT_ALTERNATIVE_NAME",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "PK_SUBJECT_ALTERNATIVE_NAME",
+                        columnNames = {"id"}
+                ),
+                @UniqueConstraint(
+                        name = "UK_SUBJECT_ALTERNATIVE_NAME",
+                        columnNames = {"certificate_id", "domain"}
+                )
+        }
 )
 public class SubjectAlternativeName extends BaseEntity {
     @Id

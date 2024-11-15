@@ -14,6 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(
+        name = "TEAM",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "PK_TEAM",
+                        columnNames = {"ID"}
+                )
+        }
+)
 public class Team extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

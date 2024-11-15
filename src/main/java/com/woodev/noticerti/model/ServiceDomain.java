@@ -11,16 +11,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = {
-        @UniqueConstraint(
-                name = "PK_SERVICE_DOMAIN",
-                columnNames = {"id"}
-        ),
-        @UniqueConstraint(
-                name = "UK_SERVICE_DOMAIN__DOMAIN_PORT",
-                columnNames = {"domain", "port"}
-        )
-})
+@Table(
+        name = "SERVICE_DOMAIN",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "PK_SERVICE_DOMAIN",
+                        columnNames = {"id"}
+                ),
+                @UniqueConstraint(
+                        name = "UK_SERVICE_DOMAIN__DOMAIN_PORT",
+                        columnNames = {"domain", "port"}
+                )
+        })
 public class ServiceDomain extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
