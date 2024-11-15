@@ -5,6 +5,7 @@ import com.woodev.noticerti.dto.req.URLRequestDTO;
 import com.woodev.noticerti.model.Certificate;
 import com.woodev.noticerti.model.SubjectAlternativeName;
 import com.woodev.noticerti.service.CertificateService;
+import com.woodev.noticerti.service.SubjectAlternativeNameService;
 import com.woodev.noticerti.util.URLBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
