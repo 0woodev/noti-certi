@@ -17,7 +17,7 @@ import java.util.List;
 public class Program extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private String id;
+    private Long id;
 
     private String programName;
 

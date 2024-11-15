@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +28,15 @@ import java.util.List;
 public class Certificate extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private String id;
+    private Long id;
 
     private String commonName;      // CN
     private String issuingCA;       // 루트 CA
     private String organization;    // O
     private String serialNumber;    // 일련번호
 
-    private String validFrom;       // 유효기간 시작일
-    private String validTo;         // 유효기간 종료일
+    private Instant validFrom;       // 유효기간 시작일
+    private Instant validTo;         // 유효기간 종료일
 
     @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default

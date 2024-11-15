@@ -17,7 +17,7 @@ import java.util.List;
 public class CertificateHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private String id;
+    private Long id;
 
     private Long ServiceDomainId;   // 서비스 도메인 ID
     private String serviceDomainName; // 서비스 도메인명
