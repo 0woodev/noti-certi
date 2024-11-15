@@ -37,8 +37,4 @@ public class Certificate extends BaseEntity {
 
     private Instant validFrom;       // 유효기간 시작일
     private Instant validTo;         // 유효기간 종료일
-
-    @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<SubjectAlternativeName> sans = new ArrayList<>(); // SAN (Subject Alternative Names)
 }

@@ -31,8 +31,6 @@ public class SubjectAlternativeName extends BaseEntity {
     private Certificate certificate;
 
     @Column(nullable = false)
-    private boolean isWildcard;
-
-    @Column(nullable = false)
-    private boolean isCommonName;
+    @Builder.Default
+    private boolean isWildcard = false;
 }
