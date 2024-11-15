@@ -14,21 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = {
-        @UniqueConstraint(
-                name = "PK_CERTIFICATE",
-                columnNames = {"id"}
-        ),
-        @UniqueConstraint(
-                name = "UK_CERTIFICATE",
-                columnNames = {"issuingCA", "serialNumber"}
-        )
-})
-public class Certificate extends BaseEntity {
+public class CertificateHistory extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private String id;
 
+    private Long ServiceDomainId;   // 서비스 도메인 ID
+    private String serviceDomainName; // 서비스 도메인명
+
+    private Long certificateId;     // 인증서 ID
     private String commonName;      // CN
     private String issuingCA;       // 루트 CA
     private String organization;    // O
@@ -37,7 +31,7 @@ public class Certificate extends BaseEntity {
     private String validFrom;       // 유효기간 시작일
     private String validTo;         // 유효기간 종료일
 
-    @OneToMany(mappedBy = "certificate", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Builder.Default
-    private List<SubjectAlternativeName> sans = new ArrayList<>(); // SAN (Subject Alternative Names)
+    private String programId;       // 프로그램 ID
+    private String programName;     // 프로그램명
+    private String programCode;     // 코드
 }

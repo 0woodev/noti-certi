@@ -37,3 +37,7 @@ out/
 .vscode/
 
 h2-database.*
+
+h2/*
+
+nohup.out

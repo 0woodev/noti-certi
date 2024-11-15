@@ -1,6 +1,5 @@
 package com.woodev.noticerti.model;
 
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,13 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints =
-    @UniqueConstraint(
-            name = "UK_SUBJECT_ALTERNATIVE_NAME",
-            columnNames = {"certificate_id", "domain"}
-    )
-)
-public class SubjectAlternativeName extends BaseEntity {
+public class ServiceDomain extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -26,13 +19,18 @@ public class SubjectAlternativeName extends BaseEntity {
     @Column(nullable = false)
     private String domain;
 
-    @ManyToOne
+    @Column(nullable = false)
+    private int port;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "san_id", nullable = false)
+    private SubjectAlternativeName subjectAlternativeName;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id", nullable = false)
     private Certificate certificate;
 
-    @Column(nullable = false)
-    private boolean isWildcard;
-
-    @Column(nullable = false)
-    private boolean isCommonName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
 }
