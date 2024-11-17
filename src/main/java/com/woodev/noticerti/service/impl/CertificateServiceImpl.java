@@ -51,8 +51,12 @@ public class CertificateServiceImpl implements CertificateService {
         String domain = url.getHost();
         int port = url.getPort();
 
-        return serviceDomainRepository.findByDomainAndPort(domain, port)
-                .map(ServiceDomain::getCertificate)
-                .orElse(null);
+        return domainRepository.findByHostAndPort(domain, port)
+                .map(Domain::getCertificate);
+    }
+
+    @Override
+    public void sync(URL httpsUrl, CertificateInfoDTO certificateFromServer) {
+
     }
 }

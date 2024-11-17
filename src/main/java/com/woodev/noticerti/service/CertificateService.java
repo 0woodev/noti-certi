@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface CertificateService {
     CertificateInfoDTO findCertificateFromServer(URL url) throws Exception;
 
-    Certificate getCertificateFromDB(URL url);
     Optional<Certificate> findCertificateFromDB(URL url);
+
+    void sync(URL httpsUrl, CertificateInfoDTO certificateFromServer);
 }
