@@ -6,9 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Builder
 @NoArgsConstructor
@@ -18,21 +15,21 @@ import java.util.List;
         name = "PROGRAM",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "PK_PROGRAM",
-                        columnNames = {"ID"}
+                        name = "PK_APP",
+                        columnNames = {"id"}
                 ),
                 @UniqueConstraint(
-                        name = "UK_PROGRAM__CODE",
-                        columnNames = {"CODE"}
-                )
+                        name = "UK_APP__TEAM_ID__CODE",
+                        columnNames = {"team_id", "code"}
+                ),
         }
 )
-public class Program extends BaseEntity {
+public class App extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    private String programName;
+    private String appName;
 
     private String code;
 

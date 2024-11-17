@@ -3,9 +3,9 @@ package com.woodev.noticerti.service.impl;
 import com.woodev.noticerti.config.UnsafeSSLContextConfig;
 import com.woodev.noticerti.dto.CertificateInfoDTO;
 import com.woodev.noticerti.model.Certificate;
-import com.woodev.noticerti.model.ServiceDomain;
+import com.woodev.noticerti.model.Domain;
 import com.woodev.noticerti.repository.CertificateRepository;
-import com.woodev.noticerti.repository.ServiceDomainRepository;
+import com.woodev.noticerti.repository.DomainRepository;
 import com.woodev.noticerti.service.CertificateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
+import java.util.Optional;
 
 
 @Service
@@ -22,10 +23,10 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateRepository certificateRepository;
 
-    private final ServiceDomainRepository serviceDomainRepository;
+    private final DomainRepository domainRepository;
 
     @Override
-    public CertificateInfoDTO getCertificateFromServer(URL httpsUrl) throws IOException {
+    public CertificateInfoDTO findCertificateFromServer(URL httpsUrl) throws IOException {
         HttpsURLConnection conn = UnsafeSSLContextConfig.getUnsafeHttpsURLConnection(httpsUrl);
         conn.setConnectTimeout(3000);
         conn.connect();
@@ -42,11 +43,11 @@ public class CertificateServiceImpl implements CertificateService {
      * ServerDomain 테이블에서 domain 과 port 를 이용하여 인증서 정보를 가져온다.
      * if 도메인 정보가 없다면 null 을 반환한다.
      *
-     * @param url
-     * @return
+     * @param url : domain, port 정보를 가지고 있는 URL 객체
+     * @return Certificate : 인증서 정보
      */
     @Override
-    public Certificate getCertificateFromDB(URL url) {
+    public Optional<Certificate> findCertificateFromDB(URL url) {
         String domain = url.getHost();
         int port = url.getPort();
 

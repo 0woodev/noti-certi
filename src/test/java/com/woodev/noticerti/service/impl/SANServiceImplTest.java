@@ -1,8 +1,8 @@
 package com.woodev.noticerti.service.impl;
 
 import com.woodev.noticerti.model.Certificate;
-import com.woodev.noticerti.model.SubjectAlternativeName;
-import com.woodev.noticerti.repository.SubjectAlternativeNameRepository;
+import com.woodev.noticerti.model.SAN;
+import com.woodev.noticerti.repository.SANRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,32 +12,31 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class SubjectAlternativeNameServiceImplTest {
+class SANServiceImplTest {
 
     @InjectMocks
-    private SubjectAlternativeNameServiceImpl subjectAlternativeNameService;
+    private SANServiceImpl sanService;
 
     @Mock
-    private SubjectAlternativeNameRepository sanRepository;
+    private SANRepository sanRepository;
 
     @Test
     void findAllByCertificate() {
         // given
         Long certificateId = 1L;
-        List<SubjectAlternativeName> sans = List.of(
-                new SubjectAlternativeName(1L, "test1.com", Certificate.builder().id(1L).build(), false),
-                new SubjectAlternativeName(1L, "dev.test1.com", Certificate.builder().id(1L).build(), false)
+        List<SAN> sans = List.of(
+                new SAN(1L, "test1.com", Certificate.builder().id(1L).build(), false),
+                new SAN(1L, "dev.test1.com", Certificate.builder().id(1L).build(), false)
         );
 
         when(sanRepository.findAllByCertificateId(any(Long.class))).thenReturn(sans);
 
         // when
-        subjectAlternativeNameService.findAllByCertificate(certificateId);
+        sanService.findAllByCertificate(certificateId);
 
         // then
         assertThat(sans).isNotNull();

@@ -1,7 +1,7 @@
 package com.woodev.noticerti.dto;
 
 import com.woodev.noticerti.model.Certificate;
-import com.woodev.noticerti.model.SubjectAlternativeName;
+import com.woodev.noticerti.model.SAN;
 import lombok.*;
 
 import java.security.cert.CertificateParsingException;
@@ -60,14 +60,14 @@ public class CertificateInfoDTO {
         }
     }
 
-    public CertificateInfoDTO(Certificate certificate, List<SubjectAlternativeName> sans) {
+    public CertificateInfoDTO(Certificate certificate, List<SAN> sans) {
         this.commonName = certificate.getCommonName();
         this.issuingCA = certificate.getIssuingCA();
         this.organization = certificate.getOrganization();
         this.validFrom = certificate.getValidFrom();
         this.validTo = certificate.getValidTo();
         this.serialNumber = certificate.getSerialNumber();
-        this.sans = sans == null ? new ArrayList<>() : sans.stream().map(SubjectAlternativeName::getDomain).toList();
+        this.sans = sans == null ? new ArrayList<>() : sans.stream().map(SAN::getHost).toList();
     }
 
     public String getSimpleSAN() {
@@ -76,6 +76,10 @@ public class CertificateInfoDTO {
         else if (sans.size() <= 1) return sans.get(0);
 
         return sans.get(0) + " 외 " + (sans.size() - 1) + "개";
+    }
+
+    public String getPrimaryKey() {
+        return this.issuingCA + this.serialNumber;
     }
 
     @Override
@@ -89,5 +93,16 @@ public class CertificateInfoDTO {
                 "  serialNumber='" + serialNumber + "'\n" +
                 "  subjectAlternativeNames=" + getSimpleSAN() + "'\n" +
                 "}\n";
+    }
+
+    public Certificate toEntity() {
+        return Certificate.builder()
+                .commonName(commonName)
+                .issuingCA(issuingCA)
+                .organization(organization)
+                .validFrom(validFrom)
+                .validTo(validTo)
+                .serialNumber(serialNumber)
+                .build();
     }
 }

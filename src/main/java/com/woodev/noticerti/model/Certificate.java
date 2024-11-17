@@ -21,7 +21,7 @@ import java.util.List;
                 columnNames = {"id"}
         ),
         @UniqueConstraint(
-                name = "UK_CERTIFICATE__ISSUINGCA_SERIAL_NUMBER",
+                name = "UK_CERTIFICATE__ISSUINGCA_SERIAL__NUMBER",
                 columnNames = {"issuingCA", "serial_number"}
         )
 })
@@ -37,4 +37,8 @@ public class Certificate extends BaseEntity {
 
     private Instant validFrom;       // 유효기간 시작일
     private Instant validTo;         // 유효기간 종료일
+
+    public String getPrimaryKey() {
+        return this.issuingCA + this.serialNumber;
+    }
 }

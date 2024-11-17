@@ -2,9 +2,9 @@ package com.woodev.noticerti.service.impl;
 
 import com.woodev.noticerti.dto.CertificateInfoDTO;
 import com.woodev.noticerti.model.Certificate;
-import com.woodev.noticerti.model.ServiceDomain;
+import com.woodev.noticerti.model.Domain;
 import com.woodev.noticerti.repository.CertificateRepository;
-import com.woodev.noticerti.repository.ServiceDomainRepository;
+import com.woodev.noticerti.repository.DomainRepository;
 import com.woodev.noticerti.util.URLBuilder;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,10 +36,10 @@ class CertificateServiceImplTest {
     private CertificateRepository certificateRepository;
 
     @Mock
-    private ServiceDomainRepository serviceDomainRepository;
+    private DomainRepository domainRepository;
 
     @Test
-    void getCertificateFromServer() {
+    void findCertificateFromServer() {
 
         // given
         List<Map<String, Object>> map = List.of(
@@ -66,7 +66,7 @@ class CertificateServiceImplTest {
         for (Map<String, Object> m : map) {
             try {
                 URL httpsUrl = URLBuilder.getHttps(m.get("domain").toString(), (int) m.get("port"));
-                CertificateInfoDTO cert = certificateService.getCertificateFromServer(httpsUrl);
+                CertificateInfoDTO cert = certificateService.findCertificateFromServer(httpsUrl);
                 certs.add(cert);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -95,7 +95,7 @@ class CertificateServiceImplTest {
     }
 
     @Test
-    void getCertificateFromDB() {
+    void findCertificateFromDB() {
         try {
             // given
             Certificate cert = Certificate.builder()
@@ -108,30 +108,33 @@ class CertificateServiceImplTest {
                     .organization("0woodev")
                     .build();
 
-            ServiceDomain domain = ServiceDomain.builder()
+            Domain domain = Domain.builder()
                     .id(1L)
-                    .domain("www.0woodev.com")
+                    .host("www.0woodev.com")
                     .port(443)
                     .certificate(cert)
                     .build();
 
 
             // repository 에서 가져오는 것이므로 null 이 아닌 cert 객체를 반환하도록 설정
-            when(serviceDomainRepository.findByDomainAndPort(any(String.class), any(int.class)))
+            when(domainRepository.findByHostAndPort(any(String.class), any(int.class)))
                     .thenReturn(Optional.of(domain));
 
 
             URL url = URLBuilder.getHttps("www.0woodev.com", 443);
 
             // when
-            Certificate actual = certificateService.getCertificateFromDB(url);
+            Optional<Certificate> actual = certificateService.findCertificateFromDB(url);
 
             // then
-            assertThat(actual).isNotNull();
-            assertThat(actual.getId()).isEqualTo(cert.getId());
-            assertThat(actual.getCommonName()).isEqualTo(cert.getCommonName());
-            verify(serviceDomainRepository, times(1))
-                    .findByDomainAndPort(any(String.class), any(int.class));
+            assertThat(actual.isPresent()).isTrue();
+
+            Certificate actualCert = actual.get();
+
+            assertThat(actualCert.getId()).isEqualTo(cert.getId());
+            assertThat(actualCert.getCommonName()).isEqualTo(cert.getCommonName());
+            verify(domainRepository, times(1))
+                    .findByHostAndPort(any(String.class), any(int.class));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,31 +144,28 @@ class CertificateServiceImplTest {
 
     @Test
     @DisplayName("Certificate 가 null 인 경우")
-    void getCertificateFromDB_returnNull() {
+    void findCertificateFromDB_returnNull() {
         try {
             // given
-
-
-            ServiceDomain domain = ServiceDomain.builder()
+            Domain domain = Domain.builder()
                     .id(1L)
-                    .domain("www.0woodev.com")
+                    .host("www.0woodev.com")
                     .port(443)
                     .build();
 
 
             // repository 에서 가져오는 것이므로 null 이 아닌 cert 객체를 반환하도록 설정
-            when(serviceDomainRepository.findByDomainAndPort(any(String.class), any(int.class)))
+            when(domainRepository.findByHostAndPort(any(String.class), any(int.class)))
                     .thenReturn(Optional.of(domain));
 
 
             URL url = URLBuilder.getHttps("www.0woodev.com", 443);
 
             // when
-            Certificate actual = certificateService.getCertificateFromDB(url);
+            Optional<Certificate> actual = certificateService.findCertificateFromDB(url);
 
             // then
-            assertThat(actual).isNull();
-
+            assertThat(actual.isEmpty()).isTrue();
         } catch (Exception e) {
             e.printStackTrace();
             fail();

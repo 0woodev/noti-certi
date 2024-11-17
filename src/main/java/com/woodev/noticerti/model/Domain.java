@@ -15,34 +15,30 @@ import lombok.NoArgsConstructor;
         name = "SERVICE_DOMAIN",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "PK_SERVICE_DOMAIN",
+                        name = "PK_DOMAIN",
                         columnNames = {"id"}
                 ),
                 @UniqueConstraint(
-                        name = "UK_SERVICE_DOMAIN__DOMAIN_PORT",
-                        columnNames = {"domain", "port"}
+                        name = "UK_DOMAIN__DOMAIN_PORT",
+                        columnNames = {"host", "port"}
                 )
         })
-public class ServiceDomain extends BaseEntity {
+public class Domain extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column(nullable = false)
-    private String domain;
+    private String host;
 
     @Column(nullable = false)
     private int port;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "san_id", nullable = false)
-    private SubjectAlternativeName subjectAlternativeName;
+    private SAN SAN;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id", nullable = false)
     private Certificate certificate;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "program_id", nullable = false)
-    private Program program;
 }
