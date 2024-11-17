@@ -23,7 +23,7 @@ public class CertificateController {
     private final CertificateService certificateService;
     private final SANService sanService;
 
-    @PutMapping
+    @PutMapping("/sync")
     public ResponseDTO<CertificateInfoDTO> createOrUpdateCertificate(@RequestBody URLRequestDTO request) throws Exception {
         // HTTPS URL 생성
         URL httpsUrl = URLBuilder.getHttps(request.domain(), request.port());
@@ -32,7 +32,8 @@ public class CertificateController {
         CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
 
         // 인증서 정보 DB 에 반영
-        certificateService.sync(httpsUrl, certificateFromServer);
+        Certificate certificate = certificateService.sync(httpsUrl, certificateFromServer);
+        certificateFromServer.setId(certificate.getId());
 
         return ResponseDTO.<CertificateInfoDTO>builder()
                 .data(certificateFromServer)
@@ -59,8 +60,6 @@ public class CertificateController {
                 .data(certificateService.findCertificateFromServer(httpsUrl))
                 .message("Success")
                 .build();
-
-
     }
 
     /**

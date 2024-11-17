@@ -35,10 +35,6 @@ public class Domain extends BaseEntity {
     private int port;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "san_id", nullable = false)
-    private SAN SAN;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id", nullable = false)
     private Certificate certificate;
 }

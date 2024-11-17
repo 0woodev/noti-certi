@@ -13,5 +13,5 @@ public interface CertificateService {
 
     Optional<Certificate> findCertificateFromDB(URL url);
 
-    void sync(URL httpsUrl, CertificateInfoDTO certificateFromServer);
+    Certificate sync(URL httpsUrl, CertificateInfoDTO certificateFromServer);
 }

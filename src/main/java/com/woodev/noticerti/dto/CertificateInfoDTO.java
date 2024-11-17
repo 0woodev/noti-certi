@@ -8,6 +8,7 @@ import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static com.woodev.noticerti.util.X500Parser.CN;
@@ -28,11 +29,12 @@ import static com.woodev.noticerti.util.X500Parser.getValue;
  * </pre>
  */
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CertificateInfoDTO {
+    @Setter
+    private Long id;
     private String commonName;
     private String issuingCA;
     private String organization;
@@ -43,6 +45,7 @@ public class CertificateInfoDTO {
 
 
     public CertificateInfoDTO(X509Certificate certificate) {
+        this.id = null;
         this.commonName = getValue(certificate.getSubjectX500Principal().getName(), CN);
         this.issuingCA = getValue(certificate.getIssuerX500Principal().getName(), CN);
         this.organization = getValue(certificate.getIssuerX500Principal().getName(), "O");
@@ -52,22 +55,32 @@ public class CertificateInfoDTO {
 
         // SAN (Subject Alternative Names)
         try {
-            this.sans = certificate.getSubjectAlternativeNames().stream()
+            Collection<List<?>> sans = certificate.getSubjectAlternativeNames();
+            this.sans = sans == null ? new ArrayList<>() : sans.stream()
                     .map(o -> o.get(1).toString())
+                    .filter(host -> !host.equals(this.commonName))
                     .toList();
+
+            this.sans.add(this.commonName);
         } catch (CertificateParsingException e) {
             this.sans = null;
         }
     }
 
     public CertificateInfoDTO(Certificate certificate, List<SAN> sans) {
+        this.id = certificate.getId();
         this.commonName = certificate.getCommonName();
         this.issuingCA = certificate.getIssuingCA();
         this.organization = certificate.getOrganization();
         this.validFrom = certificate.getValidFrom();
         this.validTo = certificate.getValidTo();
         this.serialNumber = certificate.getSerialNumber();
-        this.sans = sans == null ? new ArrayList<>() : sans.stream().map(SAN::getHost).toList();
+        this.sans = sans == null ? new ArrayList<>() : sans.stream()
+                .map(SAN::getHost)
+                .filter(host -> !host.equals(this.commonName))
+                .toList();
+
+        this.sans.add(this.commonName);
     }
 
     public String getSimpleSAN() {
@@ -104,5 +117,14 @@ public class CertificateInfoDTO {
                 .validTo(validTo)
                 .serialNumber(serialNumber)
                 .build();
+    }
+
+    public List<SAN> toSANEntities(Certificate certificate) {
+        return sans.stream()
+                .map(host -> SAN.builder()
+                        .host(host)
+                        .certificate(certificate)
+                        .build())
+                .toList();
     }
 }
