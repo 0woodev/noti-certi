@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * Domain : Host, Port 정보만 가지고 있는 테이블
+ */
 @Getter
 @Builder
 @NoArgsConstructor

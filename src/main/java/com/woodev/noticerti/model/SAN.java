@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 /**
  * SAN : Subject Alternative Name
  * <p>
- *     SAN is a field in the X.509 certificate that allows you to specify additional host names for a single SSL certificate.
+ *     SAN (Subject Alternative Name)은 인증서에 포함된 도메인명을 의미합니다.
  */
 @Getter
 @Builder

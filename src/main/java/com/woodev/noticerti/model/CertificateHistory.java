@@ -9,6 +9,10 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * 아직 적용 전
+ */
 @Getter
 @Builder
 @NoArgsConstructor

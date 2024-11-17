@@ -6,16 +6,19 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * AppDomain : App 에서 사용하는 도메인 테이블
+ */
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "PROGRAM",
+        name = "APP_DOMAIN",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "PK_PROGRAM",
+                        name = "PK_APP_DOMAIN",
                         columnNames = {"id"}
                 ),
                 @UniqueConstraint(
