@@ -56,10 +56,13 @@ public class CertificateInfoDTO {
         // SAN (Subject Alternative Names)
         try {
             Collection<List<?>> sans = certificate.getSubjectAlternativeNames();
-            this.sans = sans == null ? new ArrayList<>() : sans.stream()
-                    .map(o -> o.get(1).toString())
-                    .filter(host -> !host.equals(this.commonName))
-                    .toList();
+            this.sans = new ArrayList<>();
+            if (sans != null) {
+                sans.stream()
+                        .map(o -> o.get(1).toString())
+                        .filter(host -> !host.equals(this.commonName))
+                        .toList();
+            }
 
             this.sans.add(this.commonName);
         } catch (CertificateParsingException e) {
@@ -75,10 +78,13 @@ public class CertificateInfoDTO {
         this.validFrom = certificate.getValidFrom();
         this.validTo = certificate.getValidTo();
         this.serialNumber = certificate.getSerialNumber();
-        this.sans = sans == null ? new ArrayList<>() : sans.stream()
-                .map(SAN::getHost)
-                .filter(host -> !host.equals(this.commonName))
-                .toList();
+        this.sans = new ArrayList<>();
+        if (sans != null) {
+            this.sans = sans.stream()
+                    .map(SAN::getHost)
+                    .filter(host -> !host.equals(this.commonName))
+                    .toList();
+        }
 
         this.sans.add(this.commonName);
     }

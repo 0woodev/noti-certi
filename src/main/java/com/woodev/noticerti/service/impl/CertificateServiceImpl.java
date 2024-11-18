@@ -91,11 +91,17 @@ public class CertificateServiceImpl implements CertificateService {
             // 2. Domain 과 Certificate, SAN 연관관계 설정
             boolean isNewCertificate = !storedCertKey.equals(liveCertKey);
             if (isNewCertificate) {
-                certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl);
+                certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);
             }
 
         } else { // DB 에 인증서 정보가 없는 경우
-            certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl);
+            Domain domain = Domain.builder()
+                    .host(httpsUrl.getHost())
+                    .port(httpsUrl.getPort())
+                    // TODO .ip(이 값 구해야함)
+                    .build();
+
+            certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);
         }
 
         return certificateFromDB;
@@ -113,18 +119,15 @@ public class CertificateServiceImpl implements CertificateService {
      * @param httpsUrl : 도메인과 포트 정보를 가지고 있는 URL 객체
      * @return Certificate : 저장된 인증서 정보
      */
-    private Certificate saveNewCertificate(CertificateInfoDTO certificateFromServer, URL httpsUrl) {
+    private Certificate saveNewCertificate(CertificateInfoDTO certificateFromServer, URL httpsUrl, Domain domain) {
         Certificate certificateFromDB = certificateFromServer.toEntity();
         List<SAN> sans = certificateFromServer.toSANEntities(certificateFromDB);
 
         certificateRepository.save(certificateFromDB);
         sanRepository.saveAll(sans);
 
-        domainRepository.save(Domain.builder()
-                .host(httpsUrl.getHost())
-                .port(httpsUrl.getPort())
-                .certificate(certificateFromDB)
-                .build());
+        domain.setCertificate(certificateFromDB);
+        domainRepository.save(domain);
 
         return certificateFromDB;
     }

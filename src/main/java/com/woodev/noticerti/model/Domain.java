@@ -1,10 +1,7 @@
 package com.woodev.noticerti.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * Domain : Host, Port 정보만 가지고 있는 테이블
@@ -23,7 +20,7 @@ import lombok.NoArgsConstructor;
                 ),
                 @UniqueConstraint(
                         name = "UK_DOMAIN__DOMAIN_PORT",
-                        columnNames = {"host", "port"}
+                        columnNames = {"ip", "port"}
                 )
         })
 public class Domain extends BaseEntity {
@@ -37,7 +34,12 @@ public class Domain extends BaseEntity {
     @Column(nullable = false)
     private int port;
 
+    @Column(nullable = false)
+    private String ip;
+
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certificate_id", nullable = false)
     private Certificate certificate;
+
 }
