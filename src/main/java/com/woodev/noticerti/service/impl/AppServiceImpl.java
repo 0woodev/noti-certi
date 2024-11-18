@@ -46,6 +46,12 @@ public class AppServiceImpl implements AppService {
         return appRepository.save(newApp);
     }
 
+    @Override
+    public App update(App newApp) {
+        getApp(newApp.getId());
+        return appRepository.save(newApp);
+    }
+
     public App getApp(Long id) {
         return appRepository.findById(id)
                 .orElseThrow(() -> new NoticertiException("어플리케이션이 존재하지 않습니다."));

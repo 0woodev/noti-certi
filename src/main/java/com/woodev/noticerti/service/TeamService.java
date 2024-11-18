@@ -9,5 +9,7 @@ public interface TeamService {
 
     Team save(Team newTeam);
 
+    Team update(Team newTeam);
+
     List<Team> findAllByNameContaining(String teamName);
 }

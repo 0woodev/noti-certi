@@ -3,6 +3,7 @@ package com.woodev.noticerti.controller;
 
 import com.woodev.noticerti.dto.AppDTO;
 import com.woodev.noticerti.dto.req.AppCreationRequestDTO;
+import com.woodev.noticerti.dto.req.AppUpdateRequestDTO;
 import com.woodev.noticerti.dto.res.ResponseDTO;
 import com.woodev.noticerti.model.App;
 import com.woodev.noticerti.model.Team;
@@ -57,12 +58,11 @@ public class AppController {
                 .build();
     }
 
-    //TODO APP정보 수정
     @PutMapping
-    public ResponseDTO<AppDTO> updateApp(@RequestBody AppCreationRequestDTO request) {
+    public ResponseDTO<AppDTO> updateApp(@RequestBody AppUpdateRequestDTO request) {
         Team team = request.teamId() == null ? null : teamService.getTeam(request.teamId());
 
-        App app = appService.save(request.toEntity(team));
+        App app = appService.update(request.toEntity(team));
         return ResponseDTO.<AppDTO>builder()
                 .data(new AppDTO(app))
                 .message("Success")

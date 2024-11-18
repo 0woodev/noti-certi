@@ -25,6 +25,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public Team update(Team newTeam) {
+        getTeam(newTeam.getId());
+        return teamRepository.save(newTeam);
+    }
+
+    @Override
     public List<Team> findAllByNameContaining(String teamName) {
         return teamRepository.findAllByTeamNameContaining(teamName);
     }

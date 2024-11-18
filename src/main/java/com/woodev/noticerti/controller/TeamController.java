@@ -2,6 +2,7 @@ package com.woodev.noticerti.controller;
 
 import com.woodev.noticerti.dto.SimpleTeamDTO;
 import com.woodev.noticerti.dto.req.TeamCreationRequestDTO;
+import com.woodev.noticerti.dto.req.TeamUpdateRequestDTO;
 import com.woodev.noticerti.dto.res.ResponseDTO;
 import com.woodev.noticerti.dto.TeamDTO;
 import com.woodev.noticerti.model.Team;
@@ -17,11 +18,23 @@ import java.util.List;
 public class TeamController {
     private final TeamService teamService;
 
-    @PutMapping
+    @PostMapping
     public ResponseDTO<TeamDTO> createTeam(
         @RequestBody TeamCreationRequestDTO request
     ) {
         Team team =  teamService.save(request.toEntity());
+
+        return ResponseDTO.<TeamDTO>builder()
+                .data(new TeamDTO(team))
+                .message("Success")
+                .build();
+    }
+
+    @PutMapping
+    public ResponseDTO<TeamDTO> updateTeam(
+            @RequestBody TeamUpdateRequestDTO request
+    ) {
+        Team team =  teamService.update(request.toEntity());
 
         return ResponseDTO.<TeamDTO>builder()
                 .data(new TeamDTO(team))
