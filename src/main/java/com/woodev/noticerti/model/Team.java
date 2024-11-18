@@ -32,6 +32,8 @@ public class Team extends BaseEntity {
 
     private String teamLeader;
 
+    private String description;
+
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<App> apps = new ArrayList<>();

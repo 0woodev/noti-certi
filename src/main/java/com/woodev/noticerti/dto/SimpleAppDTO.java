@@ -10,18 +10,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AppDTO {
+public class SimpleAppDTO {
     private Long id;
     private String appName;
     private String code;
     private String description;
-    private SimpleTeamDTO team;
+    private Long teamId;
 
-    public AppDTO(App app) {
+    public SimpleAppDTO(App app) {
         this.id = app.getId();
         this.appName = app.getAppName();
         this.code = app.getCode();
         this.description = app.getDescription();
-        this.team = new SimpleTeamDTO(app.getTeam());
+        this.teamId = app.getTeam().getId();
     }
 }

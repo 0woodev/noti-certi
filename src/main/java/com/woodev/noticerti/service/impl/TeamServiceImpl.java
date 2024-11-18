@@ -7,6 +7,8 @@ import com.woodev.noticerti.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -15,5 +17,15 @@ public class TeamServiceImpl implements TeamService {
     public Team getTeam(Long id) {
         return teamRepository.findById(id)
                 .orElseThrow(() -> new NoticertiException("팀이 존재하지 않습니다."));
+    }
+
+    @Override
+    public Team save(Team newTeam) {
+        return teamRepository.save(newTeam);
+    }
+
+    @Override
+    public List<Team> findAllByNameContaining(String teamName) {
+        return teamRepository.findAllByTeamNameContaining(teamName);
     }
 }
