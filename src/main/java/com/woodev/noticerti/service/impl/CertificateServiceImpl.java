@@ -9,6 +9,7 @@ import com.woodev.noticerti.repository.CertificateRepository;
 import com.woodev.noticerti.repository.DomainRepository;
 import com.woodev.noticerti.repository.SANRepository;
 import com.woodev.noticerti.service.CertificateService;
+import com.woodev.noticerti.util.DnsResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -98,7 +99,7 @@ public class CertificateServiceImpl implements CertificateService {
             Domain domain = Domain.builder()
                     .host(httpsUrl.getHost())
                     .port(httpsUrl.getPort())
-                    // TODO .ip(이 값 구해야함)
+                    .ip(DnsResolver.getIpAddressByUrl(httpsUrl.getHost()))
                     .build();
 
             certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);

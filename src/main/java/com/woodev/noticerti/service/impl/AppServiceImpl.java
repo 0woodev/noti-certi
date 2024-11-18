@@ -1,6 +1,8 @@
 package com.woodev.noticerti.service.impl;
 
+import com.woodev.noticerti.exception.NoticertiException;
 import com.woodev.noticerti.model.App;
+import com.woodev.noticerti.model.Team;
 import com.woodev.noticerti.repository.AppRepository;
 import com.woodev.noticerti.service.AppService;
 import lombok.RequiredArgsConstructor;
@@ -42,5 +44,10 @@ public class AppServiceImpl implements AppService {
     @Override
     public App save(App newApp) {
         return appRepository.save(newApp);
+    }
+
+    public App getApp(Long id) {
+        return appRepository.findById(id)
+                .orElseThrow(() -> new NoticertiException("어플리케이션이 존재하지 않습니다."));
     }
 }

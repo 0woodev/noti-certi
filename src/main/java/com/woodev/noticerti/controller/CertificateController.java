@@ -7,6 +7,7 @@ import com.woodev.noticerti.model.Certificate;
 import com.woodev.noticerti.model.SAN;
 import com.woodev.noticerti.service.CertificateService;
 import com.woodev.noticerti.service.SANService;
+import com.woodev.noticerti.util.DnsResolver;
 import com.woodev.noticerti.util.URLBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +23,12 @@ public class CertificateController {
 
     private final CertificateService certificateService;
     private final SANService sanService;
-
     @PutMapping("/sync")
     public ResponseDTO<CertificateInfoDTO> createOrUpdateCertificate(@RequestBody URLRequestDTO request) throws Exception {
         // HTTPS URL 생성
         URL httpsUrl = URLBuilder.getHttps(request.domain(), request.port());
         // TODO 요청한 도메인 정보로 DNS 에서 가져온 실제 IP 를 구해야 한다.
+        DnsResolver.getIpAddressByUrl(httpsUrl.getHost());
         // 인증서 정보 가져오기
         CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
 
@@ -90,6 +91,24 @@ public class CertificateController {
         // 성공적으로 인증서 정보 반환
         return ResponseDTO.<CertificateInfoDTO>builder()
                 .data(certificateInfo)
+                .message("Success")
+                .build();
+    }
+
+
+    //TODO SAN으로 인증서 검색 / 도메인으로 인증서 검색
+    @GetMapping()
+    public ResponseDTO<CertificateInfoDTO> getCertificateFromDB(
+            @RequestParam String domainName
+    ) throws Exception {
+        //해당 도메인 이름 검색
+        //해당 도메인이 소유한 인증서 정보 가져오기
+
+        //SAN
+
+        // 성공적으로 인증서 정보 반환
+        return ResponseDTO.<CertificateInfoDTO>builder()
+//                .data(certificateInfo)
                 .message("Success")
                 .build();
     }

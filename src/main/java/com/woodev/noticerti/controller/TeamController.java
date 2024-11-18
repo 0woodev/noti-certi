@@ -43,7 +43,7 @@ public class TeamController {
 
     @GetMapping()
     public ResponseDTO<List<SimpleTeamDTO>> getTeam(
-        @RequestParam String teamName
+        @RequestParam(defaultValue = "") String teamName
     ) {
         List<SimpleTeamDTO> teams = teamService.findAllByNameContaining(teamName).stream()
                 .map(SimpleTeamDTO::new)
