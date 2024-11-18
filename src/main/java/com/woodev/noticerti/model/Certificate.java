@@ -37,6 +37,7 @@ public class Certificate extends BaseEntity {
 
     private Instant validFrom;       // 유효기간 시작일
     private Instant validTo;         // 유효기간 종료일
+    private String ip;              // ip주소
 
     public String getPrimaryKey() {
         return this.issuingCA + this.serialNumber;

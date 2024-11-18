@@ -27,8 +27,6 @@ public class CertificateController {
     public ResponseDTO<CertificateInfoDTO> createOrUpdateCertificate(@RequestBody URLRequestDTO request) throws Exception {
         // HTTPS URL 생성
         URL httpsUrl = URLBuilder.getHttps(request.domain(), request.port());
-        // TODO 요청한 도메인 정보로 DNS 에서 가져온 실제 IP 를 구해야 한다.
-        DnsResolver.getIpAddressByUrl(httpsUrl.getHost());
         // 인증서 정보 가져오기
         CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
 

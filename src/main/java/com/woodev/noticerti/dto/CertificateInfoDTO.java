@@ -42,9 +42,10 @@ public class CertificateInfoDTO {
     private Instant validTo;
     private String serialNumber;
     private List<String> sans;
+    private String ip;
 
 
-    public CertificateInfoDTO(X509Certificate certificate) {
+    public CertificateInfoDTO(X509Certificate certificate, String ip) {
         this.id = null;
         this.commonName = getValue(certificate.getSubjectX500Principal().getName(), CN);
         this.issuingCA = getValue(certificate.getIssuerX500Principal().getName(), CN);
@@ -52,6 +53,7 @@ public class CertificateInfoDTO {
         this.validFrom = certificate.getNotBefore().toInstant();
         this.validTo = certificate.getNotAfter().toInstant();
         this.serialNumber = certificate.getSerialNumber().toString();
+        this.ip=ip;
 
         // SAN (Subject Alternative Names)
         try {
@@ -79,6 +81,7 @@ public class CertificateInfoDTO {
         this.validTo = certificate.getValidTo();
         this.serialNumber = certificate.getSerialNumber();
         this.sans = new ArrayList<>();
+        this.ip =certificate.getIp();
         if (sans != null) {
             this.sans = sans.stream()
                     .map(SAN::getHost)
@@ -111,6 +114,7 @@ public class CertificateInfoDTO {
                 "  validTo=" + validTo + "'\n" +
                 "  serialNumber='" + serialNumber + "'\n" +
                 "  subjectAlternativeNames=" + getSimpleSAN() + "'\n" +
+                "  ipAddress=" + ip + "'\n" +
                 "}\n";
     }
 
@@ -122,6 +126,7 @@ public class CertificateInfoDTO {
                 .validFrom(validFrom)
                 .validTo(validTo)
                 .serialNumber(serialNumber)
+                .ip(ip)
                 .build();
     }
 

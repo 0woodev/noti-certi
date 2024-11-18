@@ -41,8 +41,8 @@ public class CertificateServiceImpl implements CertificateService {
         X509Certificate serverCert = certs[0];
 
         conn.disconnect();
-
-        return new CertificateInfoDTO(serverCert);
+        String ip=DnsResolver.getIpAddressByUrl(httpsUrl.getHost());
+        return new CertificateInfoDTO(serverCert,ip);
     }
 
     /**
@@ -99,7 +99,7 @@ public class CertificateServiceImpl implements CertificateService {
             Domain domain = Domain.builder()
                     .host(httpsUrl.getHost())
                     .port(httpsUrl.getPort())
-                    .ip(DnsResolver.getIpAddressByUrl(httpsUrl.getHost()))
+                    .ip(certificateFromServer.getIp())
                     .build();
 
             certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);
