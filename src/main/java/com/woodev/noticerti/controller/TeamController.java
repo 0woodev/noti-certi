@@ -1,8 +1,7 @@
 package com.woodev.noticerti.controller;
 
 import com.woodev.noticerti.dto.SimpleTeamDTO;
-import com.woodev.noticerti.dto.req.TeamCreationRequestDTO;
-import com.woodev.noticerti.dto.req.TeamUpdateRequestDTO;
+import com.woodev.noticerti.dto.req.*;
 import com.woodev.noticerti.dto.res.ResponseDTO;
 import com.woodev.noticerti.dto.TeamDTO;
 import com.woodev.noticerti.model.Team;

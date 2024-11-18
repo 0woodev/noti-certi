@@ -3,11 +3,14 @@ package com.woodev.noticerti.controller;
 
 import com.woodev.noticerti.dto.AppDTO;
 import com.woodev.noticerti.dto.req.AppCreationRequestDTO;
+import com.woodev.noticerti.dto.req.AppDomainCreationRequestDTO;
 import com.woodev.noticerti.dto.req.AppUpdateRequestDTO;
 import com.woodev.noticerti.dto.res.ResponseDTO;
 import com.woodev.noticerti.model.App;
+import com.woodev.noticerti.model.Domain;
 import com.woodev.noticerti.model.Team;
 import com.woodev.noticerti.service.AppService;
+import com.woodev.noticerti.service.DomainService;
 import com.woodev.noticerti.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +23,7 @@ import java.util.List;
 public class AppController {
     private final AppService appService;
     private final TeamService teamService;
+    private final DomainService domainService;
 
     // Read
     @GetMapping()
@@ -69,9 +73,18 @@ public class AppController {
                 .build();
     }
 
+    // 도메인과 앱이랑 연결
+    @PostMapping("/domain")
+    public ResponseDTO<Void> updateAppWithDomain(@RequestBody AppDomainCreationRequestDTO request) {
+        App app=appService.getApp(request.appId());
+        Domain domain=domainService.getDomain(request.domainId());
 
+        appService.saveAppDomain(request.toEntity(app,domain));
 
-    //TODO App이랑 팀이랑 연결
-    // TODO 도메인이랑 앱이랑 연결
+        return ResponseDTO.<Void>builder()
+                .message("Success")
+                .build();
+    }
+
 
 }

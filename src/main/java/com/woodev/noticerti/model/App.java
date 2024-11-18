@@ -1,10 +1,7 @@
 package com.woodev.noticerti.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /**
  * App : 앱 <br>
@@ -14,6 +11,7 @@ import lombok.NoArgsConstructor;
  * - 앱 : 러닝라운지, 해외딜러, HMGPrime, ...
  */
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

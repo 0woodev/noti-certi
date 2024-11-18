@@ -2,7 +2,9 @@ package com.woodev.noticerti.service.impl;
 
 import com.woodev.noticerti.exception.NoticertiException;
 import com.woodev.noticerti.model.App;
+import com.woodev.noticerti.model.AppDomain;
 import com.woodev.noticerti.model.Team;
+import com.woodev.noticerti.repository.AppDomainRepository;
 import com.woodev.noticerti.repository.AppRepository;
 import com.woodev.noticerti.service.AppService;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.List;
 public class AppServiceImpl implements AppService {
 
     private final AppRepository appRepository;
+    private final AppDomainRepository appDomainRepository;
 
     /**
      * 동일한 이름을 가지는 앱도 존재할 수 있으며, AppName 에 일부를 입력할 수도 있음
@@ -52,6 +55,19 @@ public class AppServiceImpl implements AppService {
         return appRepository.save(newApp);
     }
 
+    @Override
+    public App saveWithTeam(Long appId, Team team) {
+        App app= getApp(appId);
+        app.setTeam(team);
+        return appRepository.save(app);
+    }
+
+    @Override
+    public void saveAppDomain(AppDomain appDomain) {
+        appDomainRepository.save(appDomain);
+    }
+
+    @Override
     public App getApp(Long id) {
         return appRepository.findById(id)
                 .orElseThrow(() -> new NoticertiException("어플리케이션이 존재하지 않습니다."));
