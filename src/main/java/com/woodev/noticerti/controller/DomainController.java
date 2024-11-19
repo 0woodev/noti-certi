@@ -19,18 +19,33 @@ public class DomainController {
     private final DomainService domainService;
 
     // Read
+    @GetMapping
+    public ResponseDTO<DomainDTO> findDomainByIpAndPort(
+            @RequestParam String ip,
+            @RequestParam(defaultValue = "443") int port
+    ) {
+        DomainDTO domain = domainService.findByIpAndPort(ip, port)
+                .map(DomainDTO::new)
+                .orElse(null);
+
+        return ResponseDTO.<DomainDTO>builder()
+                .data(domain)
+                .message("Success")
+                .build();
+    }
+
     @GetMapping("/{id}")
-    public ResponseDTO<SimpleDomainDTO> getDomain(@PathVariable(name = "id") Long id) {
+    public ResponseDTO<DomainDTO> getDomainById(@PathVariable(name = "id") Long id) {
         Domain domain = domainService.getById(id);
 
-        return ResponseDTO.<SimpleDomainDTO>builder()
-                .data(new SimpleDomainDTO(domain))
+        return ResponseDTO.<DomainDTO>builder()
+                .data(new DomainDTO(domain))
                 .message("Success")
                 .build();
     }
 
     @GetMapping("/ip")
-    public ResponseDTO<String> getDomain(
+    public ResponseDTO<String> getDomainIp(
             @RequestParam String host,
             @RequestParam(defaultValue = "443") int port
     ) throws MalformedURLException {

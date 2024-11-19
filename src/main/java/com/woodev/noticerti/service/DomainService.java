@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface DomainService {
     Optional<Domain> findByIpAndPort(String ip, int port);
+
     Domain getByIpAndPort(String ip, int port);
 
     Domain getById(Long id);
