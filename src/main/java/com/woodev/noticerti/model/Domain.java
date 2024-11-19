@@ -12,14 +12,14 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "SERVICE_DOMAIN",
+        name = "DOMAIN",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "PK_DOMAIN",
                         columnNames = {"id"}
                 ),
                 @UniqueConstraint(
-                        name = "UK_DOMAIN__DOMAIN_PORT",
+                        name = "UK_DOMAIN__IP_PORT",
                         columnNames = {"ip", "port"}
                 )
         })

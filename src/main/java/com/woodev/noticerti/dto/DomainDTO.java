@@ -18,6 +18,6 @@ public class DomainDTO {
         this.host = entity.getHost();
         this.port = entity.getPort();
         this.ip = entity.getIp();
-        this.certificateId = entity.getCertificate().getId();
+        this.certificateId = entity.getCertificate() == null ? null : entity.getCertificate().getId();
     }
 }

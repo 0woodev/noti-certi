@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface SANService {
     List<SAN> findAllByCertificate(Long certificateId);
+
+    List<SAN> saveAll(List<SAN> sans);
 }

@@ -17,4 +17,9 @@ public class SANServiceImpl implements SANService {
     public List<SAN> findAllByCertificate(Long certificateId) {
         return sanRepository.findAllByCertificateId(certificateId);
     }
+
+    @Override
+    public List<SAN> saveAll(List<SAN> sans) {
+        return sanRepository.saveAll(sans);
+    }
 }

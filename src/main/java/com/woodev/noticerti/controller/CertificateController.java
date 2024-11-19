@@ -1,6 +1,8 @@
 package com.woodev.noticerti.controller;
 
 import com.woodev.noticerti.dto.CertificateInfoDTO;
+import com.woodev.noticerti.dto.DomainCertConnectDTO;
+import com.woodev.noticerti.dto.SimpleDomainDTO;
 import com.woodev.noticerti.dto.req.URLRequestDTO;
 import com.woodev.noticerti.dto.res.ResponseDTO;
 import com.woodev.noticerti.model.Certificate;
@@ -27,29 +29,40 @@ public class CertificateController {
     private final CertificateService certificateService;
     private final SANService sanService;
     @PutMapping("/sync")
-    public ResponseDTO<CertificateInfoDTO> connectCertificateAndDomain(@RequestBody URLRequestDTO request) throws Exception {
+    public ResponseDTO<DomainCertConnectDTO> connectCertificateAndDomain(@RequestBody URLRequestDTO request) throws Exception {
         Domain domain = domainService.getById(request.domainId());
 
-        URL httpsUrl = URLBuilder.getHttps(domain.getHost(), domain.getPort());
+        URL httpsUrl = URLBuilder.getHttps(domain.getIp(), domain.getPort());
         // 실시간 인증서 정보 가져오기
         CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
         Optional<Certificate> certificateOpt = certificateService.findCertificateByCAAndSN(certificateFromServer.getIssuingCA(), certificateFromServer.getSerialNumber());
 
+        Certificate certificateFromDB = null;
+        List<SAN> sans;
         if (certificateOpt.isPresent()) {   // 인증서를 관리중 이라면
-            Certificate certificate = certificateOpt.get();
+            certificateFromDB = certificateOpt.get();
+            sans = sanService.findAllByCertificate(certificateFromDB.getId());
+
             // 도메인과 인증서가 잘 연결되어 있는지 확인
-            if (!Objects.equals(certificate.getId(), domain.getCertificate().getId())) {
-                domain.setCertificate(certificate);
+            if (domain.getCertificate() == null || !Objects.equals(certificateFromDB.getId(), domain.getCertificate().getId())) {
+                domain.setCertificate(certificateFromDB);
                 domainService.save(domain);
             }
         } else {    // 인증서가 관리되고 있지 않은 경우
-            Certificate certificate = certificateService.save(certificateFromServer);
-            domain.setCertificate(certificate);
+            certificateFromDB = certificateService.save(certificateFromServer);
+            sans = sanService.saveAll(certificateFromServer.toSANEntities(certificateFromDB));
+
+            domain.setCertificate(certificateFromDB);
             domainService.save(domain);
         }
 
-        return ResponseDTO.<CertificateInfoDTO>builder()
-                .data(certificateFromServer)
+        DomainCertConnectDTO connected = new DomainCertConnectDTO(
+                new CertificateInfoDTO(certificateFromDB, sans),
+                new SimpleDomainDTO(domain)
+        );
+
+        return ResponseDTO.<DomainCertConnectDTO>builder()
+                .data(connected)
                 .message("Success")
                 .build();
     }
@@ -91,7 +104,8 @@ public class CertificateController {
         URL httpsUrl = URLBuilder.getHttps(ip, port);
 
         // DB 에 저장된 인증서 정보 가져오기
-        Optional<Certificate> certificateOpt = certificateService.findCertificateFromDB(httpsUrl);
+        CertificateInfoDTO liveCert = certificateService.findCertificateFromServer(httpsUrl);
+        Optional<Certificate> certificateOpt = certificateService.findCertificateByCAAndSN(liveCert.getIssuingCA(), liveCert.getSerialNumber());
 
         CertificateInfoDTO certificateInfo = null;
         if (certificateOpt.isPresent()) {
@@ -99,6 +113,20 @@ public class CertificateController {
             List<SAN> sans = sanService.findAllByCertificate(certificate.getId());
             certificateInfo = new CertificateInfoDTO(certificate, sans);
         }
+
+        // 성공적으로 인증서 정보 반환
+        return ResponseDTO.<CertificateInfoDTO>builder()
+                .data(certificateInfo)
+                .message("Success")
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseDTO<CertificateInfoDTO> getCertificateById(@PathVariable(name = "id") Long certificateId) throws Exception {
+        Certificate certificate = certificateService.getById(certificateId);
+        List<SAN> sans = sanService.findAllByCertificate(certificateId);
+
+        CertificateInfoDTO certificateInfo = new CertificateInfoDTO(certificate, sans);
 
         // 성공적으로 인증서 정보 반환
         return ResponseDTO.<CertificateInfoDTO>builder()

@@ -50,11 +50,8 @@ public class DomainServiceImpl implements DomainService {
      */
     @Override
     public Domain save(Domain entity) {
-        if (domainRepository.existsByIpAndPort(entity.getIp(), entity.getPort())) {
-            throw new NoticertiException("이미 등록된 도메인입니다.", HttpStatus.BAD_REQUEST);
-        }
-
-        return domainRepository.save(entity);
+        return domainRepository.findByIpAndPort(entity.getIp(), entity.getPort())
+                .orElse(domainRepository.save(entity));
     }
 
     // TODO CREATE DOMAIN

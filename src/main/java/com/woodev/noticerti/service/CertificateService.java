@@ -16,4 +16,6 @@ public interface CertificateService {
     Optional<Certificate> findCertificateByCAAndSN(String issuingCA, String serialNumber);
 
     Certificate save(CertificateInfoDTO liveCertificate);
+
+    Certificate getById(Long id);
 }

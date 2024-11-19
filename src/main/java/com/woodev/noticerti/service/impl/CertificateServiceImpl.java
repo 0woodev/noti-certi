@@ -2,9 +2,9 @@ package com.woodev.noticerti.service.impl;
 
 import com.woodev.noticerti.config.UnsafeSSLContextConfig;
 import com.woodev.noticerti.dto.CertificateInfoDTO;
+import com.woodev.noticerti.exception.NoticertiException;
 import com.woodev.noticerti.model.Certificate;
 import com.woodev.noticerti.model.Domain;
-import com.woodev.noticerti.model.SAN;
 import com.woodev.noticerti.repository.CertificateRepository;
 import com.woodev.noticerti.repository.DomainRepository;
 import com.woodev.noticerti.repository.SANRepository;
@@ -17,7 +17,6 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.net.URL;
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -84,12 +83,13 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public Certificate save(CertificateInfoDTO liveCertificate) {
         Certificate certificateFromDB = liveCertificate.toEntity();
-        List<SAN> sans = liveCertificate.toSANEntities(certificateFromDB);
 
-        Certificate saved = certificateRepository.save(certificateFromDB);
-        sanRepository.saveAll(sans);
-
-        return saved;
+        return certificateRepository.save(certificateFromDB);
     }
 
+    @Override
+    public Certificate getById(Long id) {
+        return certificateRepository.findById(id)
+                .orElseThrow(() -> new NoticertiException("해당 인증서가 존재하지 않습니다."));
+    }
 }
