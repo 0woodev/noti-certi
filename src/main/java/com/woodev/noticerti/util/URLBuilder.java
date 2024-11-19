@@ -10,19 +10,19 @@ public class URLBuilder {
     public static final String HTTPS = "https://";
     public static final String HTTP = "http://";
 
-    public static URL getHttps(String domain, int port) throws MalformedURLException {
-        if (!domain.startsWith(HTTPS)) {
-            domain = HTTPS + domain;
+    public static URL getHttps(String host, int port) throws MalformedURLException {
+        if (!host.startsWith(HTTPS)) {
+            host = HTTPS + host;
         }
 
-        return toURL(domain + ":" + port);
+        return toURL(host + ":" + port);
     }
 
-    public static URL getHttp(String domain, int port) throws MalformedURLException {
-        if (!domain.startsWith(HTTP)) {
-            domain = HTTP + domain;
+    public static URL getHttp(String host, int port) throws MalformedURLException {
+        if (!host.startsWith(HTTP)) {
+            host = HTTP + host;
         }
 
-        return toURL(domain + ":" + port);
+        return toURL(host + ":" + port);
     }
 }

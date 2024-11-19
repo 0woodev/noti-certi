@@ -7,9 +7,12 @@ import java.net.URL;
 import java.util.Optional;
 
 public interface DomainService {
-    Optional<Domain> findByHostAndPort(URL httpsUrl);
+    Optional<Domain> findByIpAndPort(String ip, int port);
+    Domain getByIpAndPort(String ip, int port);
 
     Domain getById(Long id);
 
     String getIpFromDNS(String host, int port) throws MalformedURLException;
+
+    Domain save(Domain entity);
 }

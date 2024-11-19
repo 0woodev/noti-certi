@@ -13,5 +13,7 @@ public interface CertificateService {
 
     Optional<Certificate> findCertificateFromDB(URL url);
 
-    Certificate sync(URL httpsUrl, CertificateInfoDTO certificateFromServer);
+    Optional<Certificate> findCertificateByCAAndSN(String issuingCA, String serialNumber);
+
+    Certificate save(CertificateInfoDTO liveCertificate);
 }

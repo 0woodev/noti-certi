@@ -4,8 +4,10 @@ import com.woodev.noticerti.dto.CertificateInfoDTO;
 import com.woodev.noticerti.dto.req.URLRequestDTO;
 import com.woodev.noticerti.dto.res.ResponseDTO;
 import com.woodev.noticerti.model.Certificate;
+import com.woodev.noticerti.model.Domain;
 import com.woodev.noticerti.model.SAN;
 import com.woodev.noticerti.service.CertificateService;
+import com.woodev.noticerti.service.DomainService;
 import com.woodev.noticerti.service.SANService;
 import com.woodev.noticerti.util.URLBuilder;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @RequestMapping("/certificate")
@@ -20,18 +23,30 @@ import java.util.Optional;
 @RestController
 public class CertificateController {
 
+    private final DomainService domainService;
     private final CertificateService certificateService;
     private final SANService sanService;
     @PutMapping("/sync")
-    public ResponseDTO<CertificateInfoDTO> createOrUpdateCertificate(@RequestBody URLRequestDTO request) throws Exception {
-        // HTTPS URL 생성
-        URL httpsUrl = URLBuilder.getHttps(request.host(), request.port());
-        // 인증서 정보 가져오기
-        CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
+    public ResponseDTO<CertificateInfoDTO> connectCertificateAndDomain(@RequestBody URLRequestDTO request) throws Exception {
+        Domain domain = domainService.getById(request.domainId());
 
-        // 인증서 정보 DB 에 반영
-        Certificate certificate = certificateService.sync(httpsUrl, certificateFromServer);
-        certificateFromServer.setId(certificate.getId());
+        URL httpsUrl = URLBuilder.getHttps(domain.getHost(), domain.getPort());
+        // 실시간 인증서 정보 가져오기
+        CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
+        Optional<Certificate> certificateOpt = certificateService.findCertificateByCAAndSN(certificateFromServer.getIssuingCA(), certificateFromServer.getSerialNumber());
+
+        if (certificateOpt.isPresent()) {   // 인증서를 관리중 이라면
+            Certificate certificate = certificateOpt.get();
+            // 도메인과 인증서가 잘 연결되어 있는지 확인
+            if (!Objects.equals(certificate.getId(), domain.getCertificate().getId())) {
+                domain.setCertificate(certificate);
+                domainService.save(domain);
+            }
+        } else {    // 인증서가 관리되고 있지 않은 경우
+            Certificate certificate = certificateService.save(certificateFromServer);
+            domain.setCertificate(certificate);
+            domainService.save(domain);
+        }
 
         return ResponseDTO.<CertificateInfoDTO>builder()
                 .data(certificateFromServer)
@@ -42,17 +57,17 @@ public class CertificateController {
     /**
      * 인증서 정보 실시간으로 가져오기 (DB 에 저장하지 않음 )
      *
-     * @param domain 가져오고자 하는 도메인
+     * @param ip 가져오고자 하는 ip
      * @param port 가져오고자 하는 포트
      * @return 인증서 정보
      */
     @GetMapping("/server")
     public ResponseDTO<CertificateInfoDTO> getCertificateFromServer(
-            @RequestParam String domain,
+            @RequestParam String ip,
             @RequestParam Integer port
     ) throws Exception {
         // HTTPS URL 생성
-        URL httpsUrl = URLBuilder.getHttps(domain, port);
+        URL httpsUrl = URLBuilder.getHttps(ip, port);
         // 성공적으로 인증서 정보 반환
         return ResponseDTO.<CertificateInfoDTO>builder()
                 .data(certificateService.findCertificateFromServer(httpsUrl))
@@ -63,17 +78,17 @@ public class CertificateController {
     /**
      * 인증서 정보 실시간으로 가져오기 (DB 에 저장하지 않음 )
      *
-     * @param domain 가져오고자 하는 도메인
+     * @param ip 가져오고자 하는 도메인
      * @param port 가져오고자 하는 포트
      * @return 인증서 정보
      */
     @GetMapping("/db")
     public ResponseDTO<CertificateInfoDTO> getCertificateFromDB(
-            @RequestParam String domain,
+            @RequestParam String ip,
             @RequestParam Integer port
     ) throws Exception {
         // HTTPS URL 생성
-        URL httpsUrl = URLBuilder.getHttps(domain, port);
+        URL httpsUrl = URLBuilder.getHttps(ip, port);
 
         // DB 에 저장된 인증서 정보 가져오기
         Optional<Certificate> certificateOpt = certificateService.findCertificateFromDB(httpsUrl);

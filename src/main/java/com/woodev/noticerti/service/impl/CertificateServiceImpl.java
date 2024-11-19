@@ -59,74 +59,37 @@ public class CertificateServiceImpl implements CertificateService {
                 .map(Domain::getCertificate);
     }
 
-
     /**
-     * DB 에 저장된 인증서 정보와 서버에서 가져온 인증서 정보를 비교하여 변경사항에 따라 DB 에 반영한다.
-     * 1. DB 에 인증서 정보가 없는 경우
-     * - 인증서 정보와 SAN 정보를 DB 에 저장
-     * - Domain 정보와 Certificate 정보를 연관관계로 설정
-     * 2. DB 에 인증서 정보가 있는 경우
-     * - 서버에서 가져온 인증서와 DB 에 저장된 인증서를 비교
-     * - 새로운 인증서가 발급 되었다면 DB 에 반영
-     *
-     * @param httpsUrl              : 도메인과 포트 정보를 가지고 있는 URL 객체
-     * @param certificateFromServer : 서버에서 가져온 인증서 정보
-     * @return Certificate : 현 시점 기준 인증서 정보
+     * 발급기관과 일련번호를 이용하여 인증서 정보를 가져온다.
+     * @param issuingCA 발급기관
+     * @param serialNumber 일련번호
+     * @return Certificate : 인증서 정보
      */
     @Override
-    public Certificate sync(URL httpsUrl, CertificateInfoDTO certificateFromServer) {
-        Optional<Domain> domainOpt = domainRepository.findByIpAndPort(certificateFromServer.getIp(), httpsUrl.getPort());
-
-        Certificate certificateFromDB = null;
-        if (domainOpt.isPresent()) { // DB 에 인증서 정보가 저장되어 있는 경우
-            Domain domain = domainOpt.get();
-            certificateFromDB = domain.getCertificate();
-
-            String liveCertKey = certificateFromServer.getPrimaryKey();
-            String storedCertKey = certificateFromDB.getPrimaryKey();
-
-            // 새로운 인증서로 업데이트가 되었다면 DB에 반영
-            // 1. 새로운 인증서와 SAN 데이터 추가
-            // 2. Domain 과 Certificate, SAN 연관관계 설정
-            boolean isNewCertificate = !storedCertKey.equals(liveCertKey);
-            if (isNewCertificate) {
-                certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);
-            }
-        } else { // DB 에 인증서 정보가 없는 경우
-            Domain domain = Domain.builder()
-                    .host(httpsUrl.getHost())
-                    .port(httpsUrl.getPort())
-                    .ip(certificateFromServer.getIp())
-                    .build();
-
-            certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);
-        }
-
-        return certificateFromDB;
+    public Optional<Certificate> findCertificateByCAAndSN(String issuingCA, String serialNumber) {
+        return certificateRepository.findByIssuingCAAndSerialNumber(issuingCA, serialNumber);
     }
+
 
     /**
      * 새로운 인증서 정보를 DB 에 저장한다.
      * 1. Certificate 정보 저장
      * 2. SAN 정보 저장
      * 3. SAN 정보와 Certificate 정보 연관관계 설정
-     * 4. Domain 정보 저장
-     * 5. Domain 정보와 Certificate 정보 연관관계 설정
      *
-     * @param certificateFromServer : 서버에서 가져온 인증서 정보
-     * @param httpsUrl : 도메인과 포트 정보를 가지고 있는 URL 객체
+     * @param liveCertificate : 서버에서 가져온 인증서 정보
      * @return Certificate : 저장된 인증서 정보
      */
-    private Certificate saveNewCertificate(CertificateInfoDTO certificateFromServer, URL httpsUrl, Domain domain) {
-        Certificate certificateFromDB = certificateFromServer.toEntity();
-        List<SAN> sans = certificateFromServer.toSANEntities(certificateFromDB);
 
-        certificateRepository.save(certificateFromDB);
+    @Override
+    public Certificate save(CertificateInfoDTO liveCertificate) {
+        Certificate certificateFromDB = liveCertificate.toEntity();
+        List<SAN> sans = liveCertificate.toSANEntities(certificateFromDB);
+
+        Certificate saved = certificateRepository.save(certificateFromDB);
         sanRepository.saveAll(sans);
 
-        domain.setCertificate(certificateFromDB);
-        domainRepository.save(domain);
-
-        return certificateFromDB;
+        return saved;
     }
+
 }
