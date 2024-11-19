@@ -7,7 +7,6 @@ import com.woodev.noticerti.model.Certificate;
 import com.woodev.noticerti.model.SAN;
 import com.woodev.noticerti.service.CertificateService;
 import com.woodev.noticerti.service.SANService;
-import com.woodev.noticerti.util.DnsResolver;
 import com.woodev.noticerti.util.URLBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class CertificateController {
     @PutMapping("/sync")
     public ResponseDTO<CertificateInfoDTO> createOrUpdateCertificate(@RequestBody URLRequestDTO request) throws Exception {
         // HTTPS URL 생성
-        URL httpsUrl = URLBuilder.getHttps(request.domain(), request.port());
+        URL httpsUrl = URLBuilder.getHttps(request.host(), request.port());
         // 인증서 정보 가져오기
         CertificateInfoDTO certificateFromServer = certificateService.findCertificateFromServer(httpsUrl);
 

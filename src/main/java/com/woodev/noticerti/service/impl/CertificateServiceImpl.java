@@ -41,23 +41,21 @@ public class CertificateServiceImpl implements CertificateService {
         X509Certificate serverCert = certs[0];
 
         conn.disconnect();
-        String ip=DnsResolver.getIpAddressByUrl(httpsUrl.getHost());
-        return new CertificateInfoDTO(serverCert,ip);
+        String ip = DnsResolver.getIpAddressByUrl(httpsUrl.getHost());
+        return new CertificateInfoDTO(serverCert, ip);
     }
 
     /**
-     * ServerDomain 테이블에서 domain 과 port 를 이용하여 인증서 정보를 가져온다.
+     * ServerDomain 테이블에서 host 과 port 를 이용하여 인증서 정보를 가져온다.
      * if 도메인 정보가 없다면 null 을 반환한다.
      *
-     * @param url : domain, port 정보를 가지고 있는 URL 객체
+     * @param url : host, port 정보를 가지고 있는 URL 객체
      * @return Certificate : 인증서 정보
      */
     @Override
     public Optional<Certificate> findCertificateFromDB(URL url) {
-        String domain = url.getHost();
-        int port = url.getPort();
-
-        return domainRepository.findByHostAndPort(domain, port)
+        String ip = DnsResolver.getIpAddressByUrl(url.getHost());
+        return domainRepository.findByIpAndPort(ip, url.getPort())
                 .map(Domain::getCertificate);
     }
 
@@ -77,7 +75,7 @@ public class CertificateServiceImpl implements CertificateService {
      */
     @Override
     public Certificate sync(URL httpsUrl, CertificateInfoDTO certificateFromServer) {
-        Optional<Domain> domainOpt = domainRepository.findByHostAndPort(httpsUrl.getHost(), httpsUrl.getPort());
+        Optional<Domain> domainOpt = domainRepository.findByIpAndPort(certificateFromServer.getIp(), httpsUrl.getPort());
 
         Certificate certificateFromDB = null;
         if (domainOpt.isPresent()) { // DB 에 인증서 정보가 저장되어 있는 경우
@@ -94,7 +92,6 @@ public class CertificateServiceImpl implements CertificateService {
             if (isNewCertificate) {
                 certificateFromDB = this.saveNewCertificate(certificateFromServer, httpsUrl, domain);
             }
-
         } else { // DB 에 인증서 정보가 없는 경우
             Domain domain = Domain.builder()
                     .host(httpsUrl.getHost())

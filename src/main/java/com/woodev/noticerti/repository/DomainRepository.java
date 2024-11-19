@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface DomainRepository extends JpaRepository<Domain, Long> {
     Optional<Domain> findByHostAndPort(String host, int port);
+
+    Optional<Domain> findByIpAndPort(String ip, int port);
 }
