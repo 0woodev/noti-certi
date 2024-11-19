@@ -32,7 +32,7 @@ public class AppServiceImpl implements AppService {
      * @return 검색 결과
      */
     @Override
-    public List<App> findAll(String appName, String code) {
+    public List<App> findAllByAppNameAndCode(String appName, String code) {
         if (code != null) {
             return appRepository.findAllByAppNameContainingAndCode(appName, code);
 
@@ -50,6 +50,11 @@ public class AppServiceImpl implements AppService {
     public App update(App newApp) {
         getApp(newApp.getId());
         return appRepository.save(newApp);
+    }
+
+    @Override
+    public List<App> findAll() {
+        return appRepository.findAll();
     }
 
     public App getApp(Long id) {

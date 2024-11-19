@@ -22,6 +22,6 @@ public class SimpleAppDTO {
         this.appName = app.getAppName();
         this.code = app.getCode();
         this.description = app.getDescription();
-        this.teamId = app.getTeam().getId();
+        this.teamId = app.getTeam() != null ? app.getTeam().getId() : null;
     }
 }

@@ -24,12 +24,19 @@ public class AppController {
     // Read
     @GetMapping()
     public ResponseDTO<List<AppDTO>> getApp(
-            @RequestParam(defaultValue = "") String name,
+            @RequestParam(required = false) String name,
             @RequestParam(required = false) String code
     ) {
-        List<AppDTO> apps = appService.findAll(name, code).stream()
-                .map(AppDTO::new)
-                .toList();
+        List<AppDTO> apps;
+        if (name == null && code == null) {
+            apps = appService.findAll().stream()
+                    .map(AppDTO::new)
+                    .toList();
+        } else {
+            apps = appService.findAllByAppNameAndCode(name, code).stream()
+                    .map(AppDTO::new)
+                    .toList();
+        }
 
         return ResponseDTO.<List<AppDTO>>builder()
                 .data(apps)

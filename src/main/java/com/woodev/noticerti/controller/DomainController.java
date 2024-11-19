@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
+import java.util.List;
 
 @RequestMapping("/domain")
 @RequiredArgsConstructor
@@ -64,6 +65,37 @@ public class DomainController {
         Domain domain = domainService.save(request.toEntity());
         return ResponseDTO.<DomainDTO>builder()
                 .data(new DomainDTO(domain))
+                .message("Success")
+                .build();
+    }
+
+    @GetMapping("/search")
+    public ResponseDTO<List<DomainDTO>> findDomains(@RequestParam(required = false) String host) {
+        List<DomainDTO> domains;
+        if (host == null) {
+            domains = domainService.findAll().stream()
+                    .map(DomainDTO::new)
+                    .toList();
+        } else {
+            domains = domainService.findAllByHostContaining(host).stream()
+                    .map(DomainDTO::new)
+                    .toList();
+        }
+
+        return ResponseDTO.<List<DomainDTO>>builder()
+                .data(domains)
+                .message("Success")
+                .build();
+    }
+
+    @GetMapping("/app/{id}")
+    public ResponseDTO<List<DomainDTO>> getDomainsByAppId(@PathVariable(name = "id") Long appId) {
+        List<DomainDTO> domains = domainService.findAllByAppId(appId).stream()
+                .map(DomainDTO::new)
+                .toList();
+
+        return ResponseDTO.<List<DomainDTO>>builder()
+                .data(domains)
                 .message("Success")
                 .build();
     }

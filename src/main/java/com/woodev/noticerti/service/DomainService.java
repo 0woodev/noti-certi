@@ -1,9 +1,13 @@
 package com.woodev.noticerti.service;
 
+import com.woodev.noticerti.dto.DomainDTO;
 import com.woodev.noticerti.model.Domain;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface DomainService {
@@ -16,4 +20,10 @@ public interface DomainService {
     String getIpFromDNS(String host, int port) throws MalformedURLException;
 
     Domain save(Domain entity);
+
+    List<Domain> findAllByHostContaining(String host);
+
+    List<Domain> findAll();
+
+    List<Domain> findAllByAppId(Long appId);
 }

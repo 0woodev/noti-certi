@@ -2,6 +2,8 @@ package com.woodev.noticerti.service.impl;
 
 import com.woodev.noticerti.exception.NoticertiException;
 import com.woodev.noticerti.model.Domain;
+import com.woodev.noticerti.model.AppDomain;
+import com.woodev.noticerti.repository.AppDomainRepository;
 import com.woodev.noticerti.repository.DomainRepository;
 import com.woodev.noticerti.service.DomainService;
 import com.woodev.noticerti.util.DnsResolver;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class DomainServiceImpl implements DomainService {
 
     private final DomainRepository domainRepository;
+    private final AppDomainRepository appDomainRepository;
 
     @Override
     public Optional<Domain> findByIpAndPort(String ip, int port) {
@@ -52,6 +56,23 @@ public class DomainServiceImpl implements DomainService {
     public Domain save(Domain entity) {
         return domainRepository.findByIpAndPort(entity.getIp(), entity.getPort())
                 .orElse(domainRepository.save(entity));
+    }
+
+    @Override
+    public List<Domain> findAllByHostContaining(String host) {
+        return domainRepository.findAllByHostContaining(host);
+    }
+
+    @Override
+    public List<Domain> findAll() {
+        return domainRepository.findAll();
+    }
+
+    @Override
+    public List<Domain> findAllByAppId(Long appId) {
+        return appDomainRepository.findAllByAppId(appId).stream()
+                .map(AppDomain::getDomain)
+                .toList();
     }
 
     // TODO CREATE DOMAIN
