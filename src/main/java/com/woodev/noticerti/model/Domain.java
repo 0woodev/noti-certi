@@ -39,7 +39,7 @@ public class Domain extends BaseEntity {
 
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "certificate_id", nullable = false)
+    @JoinColumn(name = "certificate_id")
     private Certificate certificate;
 
 }
