@@ -63,7 +63,7 @@ public class CertificateInfoDTO {
                 sans.stream()
                         .map(o -> o.get(1).toString())
                         .filter(host -> !host.equals(this.commonName))
-                        .toList();
+                        .forEach(this.sans::add);
             }
 
             this.sans.add(this.commonName);
@@ -72,7 +72,7 @@ public class CertificateInfoDTO {
         }
     }
 
-    public CertificateInfoDTO(Certificate certificate, List<SAN> sans) {
+    public CertificateInfoDTO(Certificate certificate, List<SAN> _sans) {
         this.id = certificate.getId();
         this.commonName = certificate.getCommonName();
         this.issuingCA = certificate.getIssuingCA();
@@ -81,12 +81,12 @@ public class CertificateInfoDTO {
         this.validTo = certificate.getValidTo();
         this.serialNumber = certificate.getSerialNumber();
         this.sans = new ArrayList<>();
-        this.ip =certificate.getIp();
-        if (sans != null) {
-            this.sans = sans.stream()
+        this.ip = certificate.getIp();
+        if (_sans != null) {
+            _sans.stream()
                     .map(SAN::getHost)
                     .filter(host -> !host.equals(this.commonName))
-                    .toList();
+                    .forEach(this.sans::add);
         }
 
         this.sans.add(this.commonName);
