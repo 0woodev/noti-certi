@@ -21,7 +21,56 @@ public class AppController {
     private final AppService appService;
     private final TeamService teamService;
 
-    // Read
+    @GetMapping("/domain/{id}")
+    public ResponseDTO<List<AppDTO>> findAppsByDomainId(@PathVariable(name = "id") Long domainId) {
+        List<AppDTO> apps = appService.findAllByDomainId(domainId).stream()
+                .map(AppDTO::new)
+                .toList();
+
+        return ResponseDTO.<List<AppDTO>>builder()
+                .data(apps)
+                .message("Success")
+                .build();
+    }
+
+    @GetMapping("/domain/exclude/{id}")
+    public ResponseDTO<List<AppDTO>> findAppsByNotDomainId(@PathVariable(name = "id") Long domainId) {
+        List<AppDTO> apps = appService.findAllByNotDomainId(domainId).stream()
+                    .map(AppDTO::new)
+                    .toList();
+
+        return ResponseDTO.<List<AppDTO>>builder()
+                .data(apps)
+                .message("Success")
+                .build();
+    }
+
+    @PutMapping("/domain/{domainId}")
+    public ResponseDTO<Integer> connectAppDomain(
+            @PathVariable(name = "domainId") Long domainId,
+            @RequestParam List<Long> appIds
+    ) {
+        int updated = appService.connectAppsDomain(domainId, appIds);
+
+        return ResponseDTO.<Integer>builder()
+                .data(updated)
+                .message("Success")
+                .build();
+    }
+
+    @DeleteMapping("/domain/{domainId}")
+    public ResponseDTO<Integer> disconnectAppDomain(
+            @PathVariable(name = "domainId") Long domainId,
+            @RequestParam List<Long> appIds
+    ) {
+        int updated = appService.disconnectAppsDomain(domainId, appIds);
+
+        return ResponseDTO.<Integer>builder()
+                .data(updated)
+                .message("Success")
+                .build();
+    }
+
     @GetMapping()
     public ResponseDTO<List<AppDTO>> getApp(
             @RequestParam(required = false) String name,

@@ -9,4 +9,9 @@ import java.util.List;
 public interface AppDomainRepository extends JpaRepository<AppDomain, Long> {
     @Query("SELECT ad FROM AppDomain ad JOIN FETCH ad.domain d WHERE ad.app.id = :appId")
     List<AppDomain> findAllByAppId(Long appId);
+
+    @Query("SELECT ad FROM AppDomain ad JOIN FETCH ad.domain d WHERE ad.domain.id = :domainId")
+    List<AppDomain> findAllByDomainId(Long domainId);
+
+    List<AppDomain> findAllByDomainIdAndAppIdIn(Long domainId, List<Long> appIds);
 }
