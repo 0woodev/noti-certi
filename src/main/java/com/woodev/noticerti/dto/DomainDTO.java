@@ -11,13 +11,13 @@ public class DomainDTO {
     private String host;
     private int port;
     private String ip;
-    private Long certificateId;
+    private SimpleCertDTO certificate;
 
     public DomainDTO(Domain entity) {
         this.id = entity.getId();
         this.host = entity.getHost();
         this.port = entity.getPort();
         this.ip = entity.getIp();
-        this.certificateId = entity.getCertificate() == null ? null : entity.getCertificate().getId();
+        this.certificate = entity.getCertificate() == null ? null : new SimpleCertDTO(entity.getCertificate());
     }
 }
